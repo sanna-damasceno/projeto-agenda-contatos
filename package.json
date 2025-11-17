@@ -1,0 +1,13 @@
+{
+  "name": "agenda-contatos",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:full": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && node server.js",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

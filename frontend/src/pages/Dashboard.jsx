@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { contactService } from '../services/api';
 import { FaSignOutAlt, FaSearch, FaFilter, FaSortAlphaDown, FaPlus, FaEdit, FaTrash, FaUser } from 'react-icons/fa';
-import '../App.css';
+import "../App.css";
 
 function Dashboard() {
   const navigate = useNavigate();

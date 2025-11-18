@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus, FaCheckSquare, FaSquare } from 'react-icons/fa';
 
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth(); 
@@ -68,11 +69,11 @@ const LoginPage = () => {
       {/* Background Section - Visível apenas em desktop */}
       <div className="auth-background">
         <div className="auth-welcome-text">BEM-VINDO!</div>
-        <img 
-          className="auth-image" 
-          src="/images/imagem_login.png" 
-          alt="Background" 
-        />
+         <img 
+            className="auth-image" 
+            src="/images/imagem_login.png"  // ✅ MUDEI AQUI
+            alt="Background" 
+          />
       </div>
       {/* Form Section */}
       <div className="auth-form-section">
@@ -80,10 +81,10 @@ const LoginPage = () => {
           {/* Logo e Nome dentro do card de login - NOVA POSIÇÃO */}
           <div className="auth-header">
             <img 
-              className="auth-logo" 
-              src="/images/logo-contate-se.png" 
-              alt="Contate-se Logo" 
-            />
+                className="auth-logo" 
+                src="/images/logo-contate-se.png"  // ✅ MUDEI AQUI
+                alt="Contate-se Logo" 
+              />
             <div className="site-name">Contate-se</div>
           </div>
             <div className="auth-form-title">LOGIN</div>

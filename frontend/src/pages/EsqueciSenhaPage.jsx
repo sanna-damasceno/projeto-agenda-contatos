@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/api'; 
 import { FaEnvelope, FaPaperPlane, FaArrowLeft, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import '../App.css';
+import "../App.css";
 
 const EsqueciSenhaPage = () => {
   const navigate = useNavigate();

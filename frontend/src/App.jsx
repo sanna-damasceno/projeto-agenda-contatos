@@ -1,4 +1,4 @@
-// frontend/src/App.jsx
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import EsqueciSenhaPage from './pages/EsqueciSenhaPage';
 import PerfilPage from './pages/PerfilPage'; 
 import ToastNotification from './components/ToastNotification';
-import './App.css';
+import "./App.css";
 
 function App() {
   return (

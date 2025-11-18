@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { userService } from '../services/api';
 import { FaArrowLeft, FaSignOutAlt, FaEdit, FaSave, FaTimes, FaTrash, FaExclamationTriangle, FaUser, FaEnvelope, FaPhone, FaCalendar } from 'react-icons/fa';
-import '../App.css';
-
+import "../App.css";
 function PerfilPage() {
   const navigate = useNavigate();
   const { user, updateUser, logout } = useAuth();

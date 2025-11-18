@@ -64,27 +64,28 @@ const LoginPage = () => {
 
   return (
     <div className="auth-container">
-      {/* Logo */}
-      <img 
-        className="auth-logo" 
-        src="/images/logo_contate_se.png" 
-        alt="Contate-se Logo" 
-      />
-
-      <div className="auth-content">
-        {/* Background Section - Visível apenas em desktop */}
-        <div className="auth-background">
-          <div className="auth-welcome-text">BEM-VINDO!</div>
-          <img 
-            className="auth-image" 
-            src="/images/imagem_login.png" 
-            alt="Background" 
-          />
-        </div>
-
-        {/* Form Section */}
-        <div className="auth-form-section">
-          <div className="auth-form-card">
+    <div className="auth-content">
+      {/* Background Section - Visível apenas em desktop */}
+      <div className="auth-background">
+        <div className="auth-welcome-text">BEM-VINDO!</div>
+        <img 
+          className="auth-image" 
+          src="/images/imagem_login.png" 
+          alt="Background" 
+        />
+      </div>
+      {/* Form Section */}
+      <div className="auth-form-section">
+        <div className="auth-form-card">
+          {/* Logo e Nome dentro do card de login - NOVA POSIÇÃO */}
+          <div className="auth-header">
+            <img 
+              className="auth-logo" 
+              src="/images/logo-contate-se.png" 
+              alt="Contate-se Logo" 
+            />
+            <div className="site-name">Contate-se</div>
+          </div>
             <div className="auth-form-title">LOGIN</div>
             <div className="auth-form-subtitle">Organize seus contatos</div>
 

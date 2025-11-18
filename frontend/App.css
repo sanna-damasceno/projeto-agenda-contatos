@@ -65,18 +65,13 @@ body {
 }
 
 /* ========== COMPONENTES DE AUTENTICAÇÃO ========== */
+
 .auth-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   padding: var(--space-sm);
   background: var(--background-white);
-}
-
-.auth-logo {
-  width: 120px;
-  margin: 0 auto var(--space-md);
-  display: block;
 }
 
 .auth-content {
@@ -86,11 +81,13 @@ body {
   gap: var(--space-lg);
   align-items: center;
   justify-content: center;
+  min-height: 100vh; /* Adiciona altura mínima */
+  padding: var(--space-sm) 0; /* Reduz padding vertical */
 }
 
-/* Background Section - Oculta em mobile */
 .auth-background {
   display: none;
+  box-shadow: none; /* Remove sombra da imagem */
 }
 
 .auth-welcome-text {
@@ -102,9 +99,10 @@ body {
 }
 
 .auth-image {
-  width: 100%;
+  width: 80%;
   max-width: 400px;
   height: auto;
+  box-shadow: none; /* Remove sombra da imagem */
 }
 
 /* Form Section */
@@ -117,8 +115,31 @@ body {
   background: var(--background-white);
   box-shadow: var(--shadow);
   border-radius: var(--radius-md);
-  padding: var(--space-xl) var(--space-lg);
+  padding: var(--space-lg) var(--space-lg); /* Reduz padding superior */
   width: 100%;
+  margin-top: -20px; /* Sobe o card */
+}
+
+/* Header com Logo e Nome DENTRO do card - NOVO ESTILO */
+.auth-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  justify-content: center;
+}
+
+.site-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.auth-logo {
+  width: 50px; /* Tamanho menor para dentro do card */
+  height: auto;
+  margin: 0;
 }
 
 .auth-form-title {
@@ -134,7 +155,7 @@ body {
   font-size: 0.9rem;
   font-weight: 300;
   text-align: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg); /* Reduz margem */
 }
 
 /* Input Groups */
@@ -869,6 +890,10 @@ body {
   .auth-content {
     flex-direction: row;
     gap: var(--space-xl);
+    align-items: flex-start; /* Alinha ao topo */
+    justify-content: center;
+    padding-top: var(--space-md); /* Reduz espaço no topo */
+    min-height: calc(100vh - 40px); /* Reduz altura mínima */
   }
   
   .auth-background {
@@ -877,11 +902,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--space-xl);
+    padding: var(--space-lg); /* Reduz padding */
+    margin-top: -30px; /* Sobe a imagem */
+    box-shadow: none; /* Remove sombra */
   }
   
   .auth-form-section {
     flex: 1;
+    margin-top: -30px;
   }
   
   .header-main {

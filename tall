@@ -1,0 +1,209 @@
+[33mcommit ca35bf62696796eae31402b2c180c48b980672b1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: sanna-damasceno <damascenosanna@gmail.com>
+Date:   Mon Nov 17 20:49:21 2025 -0400
+
+    feat: ajustar comentários
+
+[1mdiff --git a/backend/controllers/contactController.js b/backend/controllers/contactController.js[m
+[1mindex 23d6677..24b1489 100644[m
+[1m--- a/backend/controllers/contactController.js[m
+[1m+++ b/backend/controllers/contactController.js[m
+[36m@@ -97,7 +97,7 @@[m [mconst createContact = async (req, res) => {[m
+   }[m
+ };[m
+ [m
+[31m-// controllers/contactController.js - VERSÃO ROBUSTA[m
+[32m+[m
+ const updateContact = async (req, res) => {[m
+   try {[m
+     const { id } = req.params;[m
+[1mdiff --git a/backend/controllers/userController.js b/backend/controllers/userController.js[m
+[1mindex db2149b..7d1ebac 100644[m
+[1m--- a/backend/controllers/userController.js[m
+[1m+++ b/backend/controllers/userController.js[m
+[36m@@ -1,4 +1,3 @@[m
+[31m-// Adicione estas funções no authController.js[m
+ [m
+ const updateProfile = async (req, res) => {[m
+   try {[m
+[1mdiff --git a/backend/routes/auth.js b/backend/routes/auth.js[m
+[1mindex 8b7fe82..2edee2e 100644[m
+[1m--- a/backend/routes/auth.js[m
+[1m+++ b/backend/routes/auth.js[m
+[36m@@ -16,7 +16,7 @@[m [mrouter.post('/register', register);[m
+ // Rota de login[m
+ router.post('/login', login);[m
+ [m
+[31m-// Rota para obter perfil do usuário (protegida)[m
+[32m+[m
+ // Rota para obter perfil do usuário (protegida)[m
+ router.get('/profile', requireAuth, getUserProfile);[m
+ [m
+[1mdiff --git a/backend/server.js b/backend/server.js[m
+[1mindex 699ec3b..0e26e8e 100644[m
+[1m--- a/backend/server.js[m
+[1m+++ b/backend/server.js[m
+[36m@@ -5,7 +5,7 @@[m [mrequire('dotenv').config();[m
+ // Importar rotas[m
+ const authRoutes = require('./routes/auth');[m
+ const contactRoutes = require('./routes/contacts');[m
+[31m-const userRoutes = require('./routes/userRoutes'); // ← ADICIONE ESTA LINHA[m
+[32m+[m[32mconst userRoutes = require('./routes/userRoutes');[m
+ [m
+ const app = express();[m
+ [m
+[36m@@ -16,7 +16,7 @@[m [mapp.use(express.json());[m
+ // Rotas[m
+ app.use('/api/auth', authRoutes);[m
+ app.use('/api/contacts', contactRoutes);[m
+[31m-app.use('/api/user', userRoutes); // ← ADICIONE ESTA LINHA[m
+[32m+[m[32mapp.use('/api/user', userRoutes);[m[41m [m
+ [m
+ // Rota de teste SIMPLES para verificar se está funcionando[m
+ app.get('/api/health', (req, res) => {[m
+[1mdiff --git a/frontend/App.css b/frontend/App.css[m
+[1mindex 4d34cff..683c268 100644[m
+[1m--- a/frontend/App.css[m
+[1m+++ b/frontend/App.css[m
+[36m@@ -29,7 +29,7 @@[m [mbody {[m
+   width: 100%;[m
+   height: 80vh;[m
+   background-color: white;[m
+[31m-  gap: 40px; /* distância entre a imagem e o card */[m
+[32m+[m[32m  gap: 40px;[m[41m [m
+   padding: 20px 40px;[m
+ }[m
+ [m
+[36m@@ -281,8 +281,8 @@[m [mbody {[m
+   min-height: 100vh;[m
+   background-color: white;[m
+   gap: 40px;[m
+[31m-  padding: 0 40px; /* tira o padding vertical */[m
+[31m-  margin-top: -40px; /* sobe tudo um pouco */[m
+[32m+[m[32m  padding: 0 40px;[m[41m [m
+[32m+[m[32m  margin-top: -40px;[m[41m [m
+ }[m
+ [m
+ [m
+[36m@@ -350,7 +350,7 @@[m [mbody {[m
+   flex-direction: column;[m
+   align-items: center;[m
+   justify-content: flex-start;[m
+[31m-  padding-top: 20px; /* Reduzido de 80px */[m
+[32m+[m[32m  padding-top: 20px;[m[41m [m
+   margin-top: 5px;[m
+ }[m
+ [m
+[36m@@ -621,7 +621,7 @@[m [mbody {[m
+ .perfil-btn {[m
+   position: absolute;[m
+   top: 80px;[m
+[31m-  right: 100px; /* Ajuste conforme necessário para não sobrepor o botão de logout */[m
+[32m+[m[32m  right: 100px;[m[41m [m
+   background: #17a2b8;[m
+   color: white;[m
+   padding: 10px 15px;[m
+[36m@@ -1045,8 +1045,8 @@[m [mbody {[m
+   min-height: 100vh;[m
+   background: #6C63FF;[m
+   padding: 20px;[m
+[31m-  width: 100%; /* Mude de 500px para 100% */[m
+[31m-  max-width: 100%; /* Adicione esta linha */[m
+[32m+[m[32m  width: 100%;[m[41m [m
+[32m+[m[32m  max-width: 100%;[m[41m [m
+   display: flex;[m
+   flex-direction: column;[m
+   align-items: center;[m
+[36m@@ -1106,8 +1106,8 @@[m [mbody {[m
+   border-radius: 15px;[m
+   padding: 40px;[m
+   box-shadow: 0 4px 15px rgba(0,0,0,0.1);[m
+[31m-  width: 100%; /* Mude para 100% */[m
+[31m-  max-width: 800px; /* Aumente de 600px para 800px */[m
+[32m+[m[32m  width: 100%;[m[41m [m
+[32m+[m[32m  max-width: 800px;[m[41m [m
+   margin: 0 auto;[m
+ }[m
+ [m
+[1mdiff --git a/frontend/App.jsx b/frontend/App.jsx[m
+[1mindex f3642b9..9dd3117 100644[m
+[1m--- a/frontend/App.jsx[m
+[1m+++ b/frontend/App.jsx[m
+[36m@@ -7,7 +7,7 @@[m [mimport LoginPage from './pages/LoginPage';[m
+ import CadastroPage from './pages/CadastroPage';[m
+ import Dashboard from './pages/Dashboard';[m
+ import EsqueciSenhaPage from './pages/EsqueciSenhaPage';[m
+[31m-import PerfilPage from './pages/PerfilPage'; // ← IMPORTE A PÁGINA DE PERFIL[m
+[32m+[m[32mimport PerfilPage from './pages/PerfilPage';[m[41m [m
+ import ToastNotification from './components/ToastNotification';[m
+ import './App.css';[m
+ [m
+[36m@@ -40,14 +40,6 @@[m [mfunction App() {[m
+               </ProtectedRoute>[m
+             } />[m
+             [m
+[31m-            {/* Adicione outras rotas protegidas conforme necessário */}[m
+[31m-            {/* [m
+[31m-            <Route path="/contatos" element={[m
+[31m-              <ProtectedRoute>[m
+[31m-                <ContatosPage />[m
+[31m-              </ProtectedRoute>[m
+[31m-            } /> [m
+[31m-            */}[m
+           </Routes>[m
+         </div>[m
+       </Router>[m
+[1mdiff --git a/frontend/components/ProtectedRoute.jsx b/frontend/components/ProtectedRoute.jsx[m
+[1mindex 4317d5f..8e21493 100644[m
+[1m--- a/frontend/components/ProtectedRoute.jsx[m
+[1m+++ b/frontend/components/ProtectedRoute.jsx[m
+[36m@@ -1,9 +1,9 @@[m
+[31m-// frontend/src/components/ProtectedRoute.jsx[m
+[32m+[m
+ import { useAuth } from '../contexts/AuthContext';[m
+ import { Navigate } from 'react-router-dom';[m
+ [m
+[31m-const ProtectedRoute = ({ children }) => {  // ← CORRIGIDO[m
+[31m-  const { user, loading } = useAuth();      // ← CORRIGIDO[m
+[32m+[m[32mconst ProtectedRoute = ({ children }) => {[m[41m  [m
+[32m+[m[32m  const { user, loading } = useAuth();[m[41m      [m
+ [m
+   if (loading) {[m
+     return <div>Carregando...</div>;[m
+[1mdiff --git a/frontend/components/ToastNotification.jsx b/frontend/components/ToastNotification.jsx[m
+[1mindex 12c70f7..4a300b1 100644[m
+[1m--- a/frontend/components/ToastNotification.jsx[m
+[1m+++ b/frontend/components/ToastNotification.jsx[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-// frontend/components/ToastNotification.jsx[m
+[32m+[m
+ import { useState, useEffect } from 'react';[m
+ import '../App.css';[m
+ [m
+[1mdiff --git a/frontend/contexts/AuthContext.jsx b/frontend/contexts/AuthContext.jsx[m
+[1mindex cbca7c9..ecb2a03 100644[m
+[1m--- a/frontend/contexts/AuthContext.jsx[m
+[1m+++ b/frontend/contexts/AuthContext.jsx[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-// frontend/src/contexts/AuthContext.jsx[m
+[32m+[m
+ import React, { createContext, useState, useContext, useEffect } from 'react';[m
+ import { authService } from '../services/api';[m
+ [m
+[36m@@ -66,7 +66,7 @@[m [mexport const AuthProvider = ({ children }) => {[m
+     setUser(null);[m
+   };[m
+ [m
+[31m-  // === FUNÇÃO NOVA PARA ATUALIZAR USUÁRIO ===[m
+[32m+[m[32m  // FUNÇÃO PARA ATUALIZAR USUÁRIO[m[41m [m
+   const updateUser = (updatedUserData) => {[m
+     setUser(prevUser => {[m
+       if (!prevUser) return updatedUserData;[m
+[36m@@ -76,8 +76,7 @@[m [mexport const AuthProvider = ({ children }) => {[m
+         ...updatedUserData[m
+       };[m
+       [m
+[31m-      // Opcional: atualizar também no localStorage se você armazena user lá[m
+[31m-      // Se você quiser persistir os dados atualizados[m
+[32m+[m[41m      [m
+    

@@ -1727,3 +1727,28 @@ body {
     left: 100%;
   }
 }
+
+/* SOLUÇÃO DIRETA - Remove sombra e ajusta alinhamento */
+.auth-image {
+  box-shadow: none;
+  filter: none;
+  border: none;
+  max-height: 350px;
+  width: auto;
+  object-fit: contain;
+  align-self: center;
+  margin: 0 auto;
+}
+
+.auth-background {
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .auth-image {
+    max-height: 600px;
+  }
+}

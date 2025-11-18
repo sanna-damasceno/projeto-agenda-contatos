@@ -1,9 +1,9 @@
-// frontend/src/components/ProtectedRoute.jsx
+
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {  // ← CORRIGIDO
-  const { user, loading } = useAuth();      // ← CORRIGIDO
+const ProtectedRoute = ({ children }) => {  
+  const { user, loading } = useAuth();      
 
   if (loading) {
     return <div>Carregando...</div>;

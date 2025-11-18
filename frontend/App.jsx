@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage';
 import CadastroPage from './pages/CadastroPage';
 import Dashboard from './pages/Dashboard';
 import EsqueciSenhaPage from './pages/EsqueciSenhaPage';
-import PerfilPage from './pages/PerfilPage'; // ← IMPORTE A PÁGINA DE PERFIL
+import PerfilPage from './pages/PerfilPage'; 
 import ToastNotification from './components/ToastNotification';
 import './App.css';
 
@@ -40,14 +40,6 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* Adicione outras rotas protegidas conforme necessário */}
-            {/* 
-            <Route path="/contatos" element={
-              <ProtectedRoute>
-                <ContatosPage />
-              </ProtectedRoute>
-            } /> 
-            */}
           </Routes>
         </div>
       </Router>

@@ -1,4 +1,4 @@
-// frontend/components/ToastNotification.jsx
+
 import { useState, useEffect } from 'react';
 import '../App.css';
 

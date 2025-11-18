@@ -1,4 +1,4 @@
-// frontend/src/contexts/AuthContext.jsx
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../services/api';
 
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // === FUNÇÃO NOVA PARA ATUALIZAR USUÁRIO ===
+  // FUNÇÃO PARA ATUALIZAR USUÁRIO 
   const updateUser = (updatedUserData) => {
     setUser(prevUser => {
       if (!prevUser) return updatedUserData;
@@ -76,8 +76,7 @@ export const AuthProvider = ({ children }) => {
         ...updatedUserData
       };
       
-      // Opcional: atualizar também no localStorage se você armazena user lá
-      // Se você quiser persistir os dados atualizados
+      
       try {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -97,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    updateUser, // ← FUNÇÃO ADICIONADA
+    updateUser, 
     loading,
     isAuthenticated: !!user,
   };

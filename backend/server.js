@@ -5,7 +5,7 @@ require('dotenv').config();
 // Importar rotas
 const authRoutes = require('./routes/auth');
 const contactRoutes = require('./routes/contacts');
-const userRoutes = require('./routes/userRoutes'); // ← ADICIONE ESTA LINHA
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.use(express.json());
 // Rotas
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
-app.use('/api/user', userRoutes); // ← ADICIONE ESTA LINHA
+app.use('/api/user', userRoutes); 
 
 // Rota de teste SIMPLES para verificar se está funcionando
 app.get('/api/health', (req, res) => {

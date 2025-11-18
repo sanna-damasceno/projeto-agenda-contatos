@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../services/api'; // ← IMPORTAR O SERViÇO
+import { authService } from '../services/api'; 
 import '../App.css';
 
 const EsqueciSenhaPage = () => {
@@ -23,12 +23,12 @@ const EsqueciSenhaPage = () => {
     }
 
     try {
-      // 🔐 CHAMADA REAL PARA O BACKEND
+      // CHAMADA PARA O BACKEND
       const result = await authService.forgotPassword({ email });
       
       setSuccess(result.message);
       
-      // Em produção, redirecionaria após alguns segundos
+      
       setTimeout(() => {
         navigate('/login');
       }, 3000);
@@ -51,7 +51,7 @@ const EsqueciSenhaPage = () => {
             serão enviadas para o e-mail inserido
           </div>
 
-          {/* 🔴 MENSAGEM DE ERRO */}
+          {/* MENSAGEM DE ERRO */}
           {error && (
             <div className="error-message">
               <i className="fas fa-exclamation-circle"></i>
@@ -59,7 +59,7 @@ const EsqueciSenhaPage = () => {
             </div>
           )}
 
-          {/* 🟢 MENSAGEM DE SUCESSO */}
+          {/* MENSAGEM DE SUCESSO */}
           {success && (
             <div className="success-message">
               <i className="fas fa-check-circle"></i>

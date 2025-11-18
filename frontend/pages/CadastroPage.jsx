@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx'; // ← IMPORTAR O CONTEXTO
+import { useAuth } from '../contexts/AuthContext.jsx'; 
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register } = useAuth(); // ← PEGA A FUNÇÃO REGISTER DO CONTEXTO
+  const { register } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -51,7 +51,7 @@ const RegisterPage = () => {
     }
 
     try {
-      // 🔐 CHAMADA REAL PARA O BACKEND
+      // CHAMADA REAL PARA O BACKEND
       const result = await register({
         name: formData.name,
         email: formData.email,
@@ -89,7 +89,7 @@ const RegisterPage = () => {
           <div className="form-title">CADASTRO</div>
           <div className="form-subtitle">Organize seus contatos</div>
 
-          {/* 🔴 MENSAGEM DE ERRO */}
+          {/* MENSAGEM DE ERRO */}
           {error && (
             <div className="error-message">
               <i className="fas fa-exclamation-circle"></i>

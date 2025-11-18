@@ -16,7 +16,7 @@ router.post('/register', register);
 // Rota de login
 router.post('/login', login);
 
-// Rota para obter perfil do usuário (protegida)
+
 // Rota para obter perfil do usuário (protegida)
 router.get('/profile', requireAuth, getUserProfile);
 

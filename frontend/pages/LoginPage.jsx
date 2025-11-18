@@ -4,8 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // ← PEGA A FUNÇÃO LOGIN DO CONTEXTO
-  
+  const { login } = useAuth(); 
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -36,7 +35,7 @@ const LoginPage = () => {
     }
 
     try {
-      // 🔐 CHAMADA REAL PARA O BACKEND
+      // CHAMADA PARA O BACKEND
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
@@ -81,7 +80,7 @@ const LoginPage = () => {
           <div className="form-title">LOGIN</div>
           <div className="form-subtitle">Organize seus contatos</div>
 
-          {/* 🔴 MENSAGEM DE ERRO */}
+          {/* MENSAGEM DE ERRO */}
           {error && (
             <div className="error-message">
               <i className="fas fa-exclamation-circle"></i>

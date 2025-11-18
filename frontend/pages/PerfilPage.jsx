@@ -43,7 +43,7 @@ function PerfilPage() {
     }));
   };
 
-  // No PerfilPage.jsx, atualize a função salvarPerfil:
+  
     const salvarPerfil = async () => {
     if (!dadosPerfil.name.trim()) {
         setMessage({ type: 'error', text: 'Nome é obrigatório!' });
@@ -52,7 +52,7 @@ function PerfilPage() {
 
     setLoading(true);
     try {
-        // Use o userService em vez de criar uma função separada
+        
         const resultado = await userService.updateProfile({
         name: dadosPerfil.name,
         phone: dadosPerfil.phone,
@@ -88,7 +88,7 @@ function PerfilPage() {
   };
 
   const handleLogout = () => {
-    // Você já tem essa função no AuthContext
+    
     navigate('/login');
   };
 

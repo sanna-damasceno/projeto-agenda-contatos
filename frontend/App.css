@@ -29,7 +29,7 @@ body {
   width: 100%;
   height: 80vh;
   background-color: white;
-  gap: 40px; /* distância entre a imagem e o card */
+  gap: 40px; 
   padding: 20px 40px;
 }
 
@@ -281,8 +281,8 @@ body {
   min-height: 100vh;
   background-color: white;
   gap: 40px;
-  padding: 0 40px; /* tira o padding vertical */
-  margin-top: -40px; /* sobe tudo um pouco */
+  padding: 0 40px; 
+  margin-top: -40px; 
 }
 
 
@@ -350,7 +350,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 20px; /* Reduzido de 80px */
+  padding-top: 20px; 
   margin-top: 5px;
 }
 
@@ -621,7 +621,7 @@ body {
 .perfil-btn {
   position: absolute;
   top: 80px;
-  right: 100px; /* Ajuste conforme necessário para não sobrepor o botão de logout */
+  right: 100px; 
   background: #17a2b8;
   color: white;
   padding: 10px 15px;
@@ -1045,8 +1045,8 @@ body {
   min-height: 100vh;
   background: #6C63FF;
   padding: 20px;
-  width: 100%; /* Mude de 500px para 100% */
-  max-width: 100%; /* Adicione esta linha */
+  width: 100%; 
+  max-width: 100%; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1106,8 +1106,8 @@ body {
   border-radius: 15px;
   padding: 40px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  width: 100%; /* Mude para 100% */
-  max-width: 800px; /* Aumente de 600px para 800px */
+  width: 100%; 
+  max-width: 800px; 
   margin: 0 auto;
 }
 

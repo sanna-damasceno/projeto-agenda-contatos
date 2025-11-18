@@ -6,9 +6,9 @@ import '../App.css';
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // ← PEGA USUÁRIO E LOGOUT DO CONTEXTO
+  const { user, logout } = useAuth(); 
   
-  // Estado para os contatos (AGORA DO BACKEND)
+  // Estado para os contatos 
   const [contatos, setContatos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -124,7 +124,7 @@ function Dashboard() {
   // Função para salvar edição
 
 const salvarEdicao = async () => {
-  // REMOVA a verificação do telefone, mantenha apenas nome e email obrigatórios
+  
   if (editarContato.nome && editarContato.email) {
     try {
       await contactService.updateContact(editarContato.id, {
@@ -144,7 +144,7 @@ const salvarEdicao = async () => {
       alert('Erro ao atualizar contato: ' + error.message);
     }
   } else {
-    alert('Preencha pelo menos nome e e-mail!'); // Mantém apenas nome e email como obrigatórios
+    alert('Preencha pelo menos nome e e-mail!'); 
   }
 };
 
@@ -363,8 +363,7 @@ const salvarEdicao = async () => {
           </div>
         )}
 
-        {/* ... (resto do código permanece igual - busca, filtros, paginação, modal) */}
-        {/* Campo de busca */}
+        
         <div className="campo-busca">
           <div className="busca-icon">🔍</div>
           <input

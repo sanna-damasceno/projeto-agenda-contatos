@@ -1,4 +1,3 @@
-// Adicione estas funções no authController.js
 
 const updateProfile = async (req, res) => {
   try {

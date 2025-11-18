@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { userService } from '../services/api';
+import { FaArrowLeft, FaSignOutAlt, FaEdit, FaSave, FaTimes, FaTrash, FaExclamationTriangle, FaUser, FaEnvelope, FaPhone, FaCalendar } from 'react-icons/fa';
 import '../App.css';
 
 function PerfilPage() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   
   const [dadosPerfil, setDadosPerfil] = useState({
     name: '',
@@ -18,9 +19,6 @@ function PerfilPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [editando, setEditando] = useState(false);
-
-
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   // Carregar dados do usuário
@@ -43,38 +41,46 @@ function PerfilPage() {
     }));
   };
 
-  
-    const salvarPerfil = async () => {
+  const salvarPerfil = async () => {
     if (!dadosPerfil.name.trim()) {
-        setMessage({ type: 'error', text: 'Nome é obrigatório!' });
-        return;
+      setMessage({ type: 'error', text: 'Nome é obrigatório!' });
+      return;
     }
 
     setLoading(true);
     try {
-        
-        const resultado = await userService.updateProfile({
+      const resultado = await userService.updateProfile({
         name: dadosPerfil.name,
         phone: dadosPerfil.phone,
         avatar_url: dadosPerfil.avatar_url
-        });
-        
-       
-        
-        setEditando(false);
-        
-        // Limpar mensagem após 3 segundos
-        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-        
+      });
+      
+      // Atualizar contexto de autenticação
+      updateUser({
+        ...user,
+        name: dadosPerfil.name,
+        phone: dadosPerfil.phone,
+        avatar_url: dadosPerfil.avatar_url
+      });
+      
+      setMessage({ 
+        type: 'success', 
+        text: 'Perfil atualizado com sucesso!' 
+      });
+      setEditando(false);
+      
+      // Limpar mensagem após 3 segundos
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      
     } catch (error) {
-        setMessage({ 
+      setMessage({ 
         type: 'error', 
         text: error.message || 'Erro ao atualizar perfil!' 
-        });
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-    };
+  };
 
   const cancelarEdicao = () => {
     setDadosPerfil({
@@ -88,19 +94,11 @@ function PerfilPage() {
   };
 
   const handleLogout = () => {
-    
+    logout();
     navigate('/login');
   };
 
-  if (!user) {
-    return (
-      <div className="loading-container">
-        <p>Carregando...</p>
-      </div>
-    );
-  }
-
-    // Função para excluir conta
+  // Função para excluir conta
   const excluirConta = async () => {
     if (!window.confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita e todos os seus contatos serão perdidos!')) {
       return;
@@ -123,13 +121,13 @@ function PerfilPage() {
         throw new Error(errorData.error || 'Erro ao excluir conta');
       }
 
-      // Limpar dados do usuário
-      localStorage.removeItem('token');
+      // Fazer logout e limpar dados
+      logout();
       
-      // Mostrar mensagem de sucesso
-      if (window.showToast) {
-        window.showToast('Conta excluída com sucesso!', 'success');
-      }
+      setMessage({ 
+        type: 'success', 
+        text: 'Conta excluída com sucesso!' 
+      });
       
       // Redirecionar para página inicial
       setTimeout(() => {
@@ -144,31 +142,40 @@ function PerfilPage() {
       });
     } finally {
       setDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
 
-  
+  if (!user) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Carregando perfil...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="perfil-container">
+    <div className="container">
       {/* Header */}
-      <div className="perfil-header">
+      <header className="profile-header">
         <button 
-          className="btn-dashboard"
+          className="btn btn-secondary"
           onClick={() => navigate('/dashboard')}
         >
-          Dashboard
+          <FaArrowLeft className="btn-icon" />
+          <span className="btn-text">Voltar ao Dashboard</span>
         </button>
         
-        <h1>Meu Perfil</h1>
+        <h1 className="profile-title">Meu Perfil</h1>
         
         <button 
-          className="btn-logout"
+          className="btn btn-danger"
           onClick={handleLogout}
         >
-          Sair
+          <FaSignOutAlt className="btn-icon" />
+          <span className="btn-text">Sair</span>
         </button>
-      </div>
+      </header>
 
       {/* Mensagens */}
       {message.text && (
@@ -178,9 +185,9 @@ function PerfilPage() {
       )}
 
       {/* Conteúdo do Perfil */}
-      <div className="perfil-content">
+      <div className="profile-container">
         {/* Avatar */}
-        <div className="avatar-section">
+        <div className="profile-avatar">
           <div className="avatar">
             {dadosPerfil.avatar_url ? (
               <img src={dadosPerfil.avatar_url} alt="Avatar" />
@@ -204,110 +211,135 @@ function PerfilPage() {
         </div>
 
         {/* Formulário de Dados */}
-        <div className="dados-section">
-          <div className="campo-perfil">
-            <label>Nome</label>
+        <div className="profile-data">
+          <div className="profile-field">
+            <label className="profile-label">
+              <FaUser className="field-icon" />
+              Nome
+            </label>
             {editando ? (
               <input
                 type="text"
                 name="name"
                 value={dadosPerfil.name}
                 onChange={handleInputChange}
-                className="input-perfil"
+                className="profile-input"
                 maxLength={100}
+                placeholder="Seu nome completo"
               />
             ) : (
-              <div className="valor-perfil">{dadosPerfil.name}</div>
+              <div className="profile-value">{dadosPerfil.name}</div>
             )}
           </div>
 
-          <div className="campo-perfil">
-            <label>E-mail</label>
-            <div className="valor-perfil email-disabled">{dadosPerfil.email}</div>
+          <div className="profile-field">
+            <label className="profile-label">
+              <FaEnvelope className="field-icon" />
+              E-mail
+            </label>
+            <div className="profile-value email-disabled">{dadosPerfil.email}</div>
             <small className="email-note">E-mail não pode ser alterado</small>
           </div>
 
-          <div className="campo-perfil">
-            <label>Telefone</label>
+          <div className="profile-field">
+            <label className="profile-label">
+              <FaPhone className="field-icon" />
+              Telefone
+            </label>
             {editando ? (
               <input
                 type="text"
                 name="phone"
                 value={dadosPerfil.phone}
                 onChange={handleInputChange}
-                className="input-perfil"
+                className="profile-input"
                 maxLength={20}
                 placeholder="(00) 00000-0000"
               />
             ) : (
-              <div className="valor-perfil">
+              <div className="profile-value">
                 {dadosPerfil.phone || 'Não informado'}
               </div>
             )}
           </div>
 
-          <div className="campo-perfil">
-            <label>Membro desde</label>
-            <div className="valor-perfil">
+          <div className="profile-field">
+            <label className="profile-label">
+              <FaCalendar className="field-icon" />
+              Membro desde
+            </label>
+            <div className="profile-value">
               {user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : 'Data não disponível'}
             </div>
           </div>
         </div>
 
         {/* Botões de Ação */}
-
-
-        <div className="acoes-section">
+        <div className="profile-actions">
           {!editando ? (
             <button
-              className="btn-editar-perfil"
+              className="btn btn-primary"
               onClick={() => setEditando(true)}
             >
-              ✏️ Editar Perfil
+              <FaEdit className="btn-icon" />
+              Editar Perfil
             </button>
           ) : (
-            <div className="botoes-edicao">
+            <div className="edit-buttons">
               <button
-                className="btn-salvar-perfil"
+                className="btn btn-success"
                 onClick={salvarPerfil}
                 disabled={loading}
               >
-                {loading ? 'Salvando...' : '💾 Salvar Alterações'}
+                <FaSave className="btn-icon" />
+                {loading ? 'Salvando...' : 'Salvar Alterações'}
               </button>
               
               <button
-                className="btn-cancelar-perfil"
+                className="btn btn-secondary"
                 onClick={cancelarEdicao}
                 disabled={loading}
               >
-                ❌ Cancelar
+                <FaTimes className="btn-icon" />
+                Cancelar
               </button>
             </div>
-            )}
+          )}
+        </div>
 
-            {/* Seção de Exclusão de Conta */}
-          <div className="conta-section">
-            <h3>Gerenciar Conta</h3>
-            
-            <div className="botoes-conta">
-              <button
-                className="btn-excluir-conta"
-                onClick={excluirConta}
-                disabled={deleting}
-              >
-                {deleting ? '⏳ Excluindo...' : '🗑️ Excluir Conta Permanentemente'}
-              </button>
-              </div>
-              <div className="avisos-conta">
-              <p><strong>⚠️ ATENÇÃO:</strong></p>
-              <ul>
-                <li>❌ Esta ação <strong>NÃO PODE</strong> ser desfeita</li>
-                <li>📞 Todos os seus contatos serão <strong>permanentemente excluídos</strong></li>
-                <li>🔒 Seus dados serão <strong>removidos completamente</strong> do sistema</li>
-              </ul>
-            </div>
-          </div>
+        {/* Seção de Exclusão de Conta */}
+        <div className="account-section">
+          <h3 className="account-title">
+            <FaExclamationTriangle className="title-icon" />
+            Gerenciar Conta
+          </h3>
           
+          <div className="account-warning">
+            <p><strong>⚠️ ATENÇÃO: Ação Irreversível</strong></p>
+            <ul className="warning-list">
+              <li>
+                <FaTimes className="warning-icon" />
+                Esta ação <strong>NÃO PODE</strong> ser desfeita
+              </li>
+              <li>
+                <FaTrash className="warning-icon" />
+                Todos os seus contatos serão <strong>permanentemente excluídos</strong>
+              </li>
+              <li>
+                <FaUser className="warning-icon" />
+                Seus dados serão <strong>removidos completamente</strong> do sistema
+              </li>
+            </ul>
+          </div>
+
+          <button
+            className="btn btn-danger delete-account-btn"
+            onClick={excluirConta}
+            disabled={deleting || editando}
+          >
+            <FaTrash className="btn-icon" />
+            {deleting ? 'Excluindo Conta...' : 'Excluir Conta Permanentemente'}
+          </button>
         </div>
       </div>
     </div>

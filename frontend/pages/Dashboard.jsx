@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { contactService } from '../services/api';
-import { FaSignOutAlt } from 'react-icons/fa';
+import { FaSignOutAlt, FaSearch, FaFilter, FaSortAlphaDown, FaPlus, FaEdit, FaTrash, FaUser } from 'react-icons/fa';
 import '../App.css';
 
 function Dashboard() {
@@ -17,7 +17,6 @@ function Dashboard() {
   const [editarContato, setEditarContato] = useState(null);
   const [mostrarModalEdicao, setMostrarModalEdicao] = useState(false);
   
-
   // Estado para novo contato
   const [novoContato, setNovoContato] = useState({
     nome: '',
@@ -60,7 +59,7 @@ function Dashboard() {
 
   // Função para logout
   const handleLogout = () => {
-    logout(); // ← USA A FUNÇÃO DO CONTEXTO
+    logout();
     navigate('/login');
   }
 
@@ -81,13 +80,9 @@ function Dashboard() {
           notes: novoContato.observacoes || ''
         });
         
-        // Adicionar o novo contato à lista
         setContatos([...contatos, result.contact]);
         setMostrarModal(false);
-        
-        // Recarregar a lista para garantir sincronização
         loadContacts();
-        
         alert('Contato adicionado com sucesso!');
       } catch (error) {
         alert('Erro ao adicionar contato: ' + error.message);
@@ -123,32 +118,28 @@ function Dashboard() {
   };
 
   // Função para salvar edição
+  const salvarEdicao = async () => {
+    if (editarContato.nome && editarContato.email) {
+      try {
+        await contactService.updateContact(editarContato.id, {
+          name: editarContato.nome,
+          email: editarContato.email,
+          phone: editarContato.telefone || '',
+          notes: editarContato.observacoes || '',
+          status: 'Não Registrado'
+        });
 
-const salvarEdicao = async () => {
-  
-  if (editarContato.nome && editarContato.email) {
-    try {
-      await contactService.updateContact(editarContato.id, {
-        name: editarContato.nome,
-        email: editarContato.email,
-        phone: editarContato.telefone || '', // Permite string vazia
-        notes: editarContato.observacoes || '',
-        status: 'Não Registrado'
-      });
-
-      setMostrarModalEdicao(false);
-      setEditarContato(null);
-      loadContacts();
-      alert('Contato atualizado com sucesso!');
-      
-    } catch (error) {
-      alert('Erro ao atualizar contato: ' + error.message);
+        setMostrarModalEdicao(false);
+        setEditarContato(null);
+        loadContacts();
+        alert('Contato atualizado com sucesso!');
+      } catch (error) {
+        alert('Erro ao atualizar contato: ' + error.message);
+      }
+    } else {
+      alert('Preencha pelo menos nome e e-mail!'); 
     }
-  } else {
-    alert('Preencha pelo menos nome e e-mail!'); 
-  }
-};
-
+  };
 
   // Filtrar contatos 
   const contatosFiltrados = contatos.filter(contato => {
@@ -229,123 +220,242 @@ const salvarEdicao = async () => {
   }
 
   return (
-    <>
-      {/* TÍTULO PRINCIPAL*/}
-      <div className="titulo-principal">
-        Contate-se
-      </div>
+    <div className="dashboard-responsive">
+      {/* HEADER */}
+      <header className="dashboard-header">
+        <div className="header-main">
+          <h1 className="dashboard-title">Contate-se</h1>
+          <div className="header-actions">
+            <button className="btn btn-primary" onClick={() => navigate('/perfil')}>
+              <FaUser className="btn-icon" />
+              <span className="btn-text">Meu Perfil</span>
+            </button>
+            <button className="btn btn-danger" onClick={handleLogout}>
+              <FaSignOutAlt className="btn-icon" />
+              <span className="btn-text">Sair</span>
+            </button>
+          </div>
+        </div>
 
-      {/* Botão do Perfil */}
-      <div className="perfil-btn" onClick={() => navigate('/perfil')}>
-        👤 Meu Perfil
-      </div>
+        {/* BARRA DE AÇÕES */}
+        <div className="actions-bar">
+          <button className="btn-add" onClick={abrirModalAdicionar}>
+            <FaPlus className="btn-icon" />
+            <span>Adicionar Contato</span>
+          </button>
+          
+          <div className="search-filters">
+            <div className="search-box">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Busque por nome ou e-mail"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                className="search-input"
+                maxLength={50}
+              />
+            </div>
 
-      {/* Botão de Logout com nome do usuário */}
-      <div className="logout-btn" onClick={handleLogout}>
-        <FaSignOutAlt size={24} />
-      </div>
+            {/* FILTRO SITUAÇÃO */}
+            <div className="filter-container">
+              <button 
+                className="filter-btn"
+                onClick={() => setMostrarDropdownSituacao(!mostrarDropdownSituacao)}
+              >
+                <FaFilter className="btn-icon" />
+                <span>
+                  {filtroSituacao === 'todos' ? 'Situação' : 
+                   filtroSituacao === 'registrados' ? 'Registrados' : 'Não Reg.'}
+                </span>
+              </button>
+
+              {mostrarDropdownSituacao && (
+                <div className="dropdown-menu">
+                  <div 
+                    className={`dropdown-item ${filtroSituacao === 'todos' ? 'active' : ''}`}
+                    onClick={() => selecionarFiltroSituacao('todos')}
+                  >
+                    Todos
+                  </div>
+                  <div 
+                    className={`dropdown-item ${filtroSituacao === 'registrados' ? 'active' : ''}`}
+                    onClick={() => selecionarFiltroSituacao('registrados')}
+                  >
+                    Registrados
+                  </div>
+                  <div 
+                    className={`dropdown-item ${filtroSituacao === 'nao-registrados' ? 'active' : ''}`}
+                    onClick={() => selecionarFiltroSituacao('nao-registrados')}
+                  >
+                    Não Registrados
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* FILTRO ALFABETO */}
+            <div className="filter-container">
+              <button 
+                className="filter-btn"
+                onClick={() => setMostrarDropdownAlfabeto(!mostrarDropdownAlfabeto)}
+              >
+                <FaSortAlphaDown className="btn-icon" />
+                <span>{filtroAlfabeto === 'todos' ? 'A-Z' : filtroAlfabeto}</span>
+              </button>
+
+              {mostrarDropdownAlfabeto && (
+                <div className="dropdown-menu alphabet-grid">
+                  {opcoesAlfabeto.map((letra) => (
+                    <div 
+                      key={letra}
+                      className={`dropdown-item ${filtroAlfabeto === letra ? 'active' : ''}`}
+                      onClick={() => selecionarFiltroAlfabeto(letra)}
+                    >
+                      {letra === 'todos' ? 'Todos' : letra}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* MENSAGEM DE ERRO */}
       {error && (
-        <div className="error-message-dashboard">
+        <div className="error-message">
           <i className="fas fa-exclamation-circle"></i>
           {error}
         </div>
       )}
 
-      <div className="dashboard-container">
-        {/* Background */}
-        <div className="dashboard-background" />
-        
-        {/* Tabela de contatos */}
-        <div className="tabela-contatos" />
-        
-        {/* Linhas da tabela */}
-        <div className="linha-tabela linha-1" />
-        <div className="linha-tabela linha-2" />
-        <div className="linha-tabela linha-3" />
-        
-        {/* Cabeçalhos da tabela */}
-        <div className="cabecalho acoes">Ações</div>
-        <div className="cabecalho situacao">Situação</div>
-        <div className="cabecalho observacoes">Observações</div>
-        <div className="cabecalho telefone">Telefone</div>
-        <div className="cabecalho email">E-mail</div>
-        <div className="cabecalho nome">Nome</div>
+      {/* CONTADOR */}
+      <div className="contacts-counter">
+        Contatos ({contatosFiltrados.length})
+      </div>
 
-        {/* Lista de contatos dinâmica */}
-        {contatosPaginados.map((contato, index) => {
-          const topPosition = 269 + (index * 47);
-          const nome = contato.name || contato.nome;
-          const email = contato.email;
-          const telefone = contato.phone || contato.telefone;          
-          const observacoes = contato.notes || contato.observacoes;
-          const situacao = contato.status || contato.situacao;
-          
-          return (
-            <div key={contato.id}>
-              {/* Indicador de situação */}
-              <div 
-                className={`indicador-situacao ${situacao === 'Registrado' ? 'registrado' : 'nao-registrado'}`}
-                style={{ top: `${topPosition + 8}px` }}
-                title="Status automático"
-              />
-              
-              {/* Situação */}
-              <div 
-                className="texto-situacao"
-                style={{ top: `${topPosition + 8}px` }}
-              >
-                {situacao === 'Registrado' ? 'Registrado' : 'Não Registrado'}
-              </div>
+      {/* TABELA DE CONTATOS */}
+      <div className="table-container">
+        {contatosPaginados.length > 0 ? (
+          <>
+            {/* TABELA PARA DESKTOP */}
+            <table className="contacts-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th className="hide-mobile">Telefone</th>
+                  <th className="hide-mobile">Observações</th>
+                  <th>Situação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contatosPaginados.map((contato) => {
+                  const nome = contato.name || contato.nome;
+                  const email = contato.email;
+                  const telefone = contato.phone || contato.telefone;
+                  const observacoes = contato.notes || contato.observacoes;
+                  const situacao = contato.status || contato.situacao;
+                  
+                  return (
+                    <tr key={contato.id}>
+                      <td className="contact-name">{nome}</td>
+                      <td className="contact-email">{email}</td>
+                      <td className="contact-phone hide-mobile">{telefone}</td>
+                      <td className="contact-notes hide-mobile">{observacoes}</td>
+                      <td>
+                        <div className="status-indicator">
+                          <span 
+                            className={`status-dot ${situacao === 'Registrado' ? 'active' : 'inactive'}`}
+                            title={situacao}
+                          ></span>
+                          <span className="status-text">
+                            {situacao === 'Registrado' ? 'Registrado' : 'Não Registrado'}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="action-buttons">
+                          <button 
+                            className="btn-action btn-edit"
+                            onClick={() => abrirModalEdicao(contato)}
+                            title="Editar contato"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button 
+                            className="btn-action btn-delete"
+                            onClick={() => removerContato(contato.id)}
+                            title="Excluir contato"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
-              {/* Nome */}
-              <div className="contato-nome" style={{ top: `${topPosition + 8}px` }}>
-                {nome}
-              </div>
-
-              {/* Telefone */}
-              <div className="contato-telefone" style={{ top: `${topPosition + 8}px` }}>
-                {telefone}
-              </div>
-
-              {/* Email */}
-              <div className="contato-email" style={{ top: `${topPosition + 8}px` }}>
-                {email}
-              </div>
-
-              {/* Observações */}
-              <div className="contato-observacoes" style={{ top: `${topPosition + 8}px` }}>
-                {observacoes}
-              </div>
-
-              {/* Botões de ação - Editar */}
-              <div 
-                className="btn-acao btn-editar"
-                style={{ top: `${topPosition + 8}px` }}
-                onClick={() => abrirModalEdicao(contato)}
-                title="Editar contato"
-              >
-                ✏️
-              </div>
-
-              {/* Botões de ação - Excluir */}
-              <div 
-                className="btn-acao btn-excluir"
-                style={{ top: `${topPosition + 8}px` }}
-                onClick={() => removerContato(contato.id)}
-                title="Excluir contato"
-              >
-                🗑️
-              </div>
+            {/* CARDS PARA MOBILE */}
+            <div className="mobile-cards">
+              {contatosPaginados.map((contato) => {
+                const nome = contato.name || contato.nome;
+                const email = contato.email;
+                const telefone = contato.phone || contato.telefone;
+                const observacoes = contato.notes || contato.observacoes;
+                const situacao = contato.status || contato.situacao;
+                
+                return (
+                  <div key={contato.id} className="contact-card">
+                    <div className="card-header">
+                      <h3 className="card-name">{nome}</h3>
+                      <div className="card-status">
+                        <span 
+                          className={`status-dot ${situacao === 'Registrado' ? 'active' : 'inactive'}`}
+                        ></span>
+                        {situacao === 'Registrado' ? 'Registrado' : 'Não Registrado'}
+                      </div>
+                    </div>
+                    <div className="card-content">
+                      <div className="card-field">
+                        <strong>E-mail:</strong> {email}
+                      </div>
+                      <div className="card-field">
+                        <strong>Telefone:</strong> {telefone || 'Não informado'}
+                      </div>
+                      {observacoes && (
+                        <div className="card-field">
+                          <strong>Observações:</strong> {observacoes}
+                        </div>
+                      )}
+                    </div>
+                    <div className="card-actions">
+                      <button 
+                        className="btn-action btn-edit"
+                        onClick={() => abrirModalEdicao(contato)}
+                      >
+                        <FaEdit /> Editar
+                      </button>
+                      <button 
+                        className="btn-action btn-delete"
+                        onClick={() => removerContato(contato.id)}
+                      >
+                        <FaTrash /> Excluir
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-
-        {/* Mensagem quando não há contatos */}
-        {contatosPaginados.length === 0 && !loading && (
-          <div className="no-contacts-container">
-            <div className="no-contacts-message">
+          </>
+        ) : (
+          /* MENSAGEM SEM CONTATOS */
+          <div className="no-contacts">
+            <div className="no-contacts-content">
               <h3>Nenhum contato encontrado</h3>
               <p>
                 {contatos.length === 0 
@@ -354,177 +464,74 @@ const salvarEdicao = async () => {
               </p>
               {contatos.length === 0 && (
                 <button 
-                  className="btn-adicionar-first"
+                  className="btn-add-first"
                   onClick={abrirModalAdicionar}
-                >+ Adicionar Primeiro Contato
+                >
+                  <FaPlus /> Adicionar Primeiro Contato
                 </button>
               )}
             </div>
           </div>
         )}
-
-        
-        <div className="campo-busca">
-          <div className="busca-icon">🔍</div>
-          <input
-            type="text"
-            placeholder="Busque por nome ou e-mail"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="busca-input"
-            maxLength={50}
-          />
-        </div>
-
-        {/* Filtro por Situação com Dropdown */}
-        <div className="filtro-container">
-          <div 
-            className="filtro-situacao"
-            onClick={() => setMostrarDropdownSituacao(!mostrarDropdownSituacao)}
-          >
-            <div className="filtro-texto">
-              {filtroSituacao === 'todos' ? 'Situação' : 
-               filtroSituacao === 'registrados' ? 'Registrados' : 'Não Reg.'}
-            </div>
-            <div className="filtro-seta">▼</div>
-          </div>
-
-          {/* Dropdown Situação */}
-          {mostrarDropdownSituacao && (
-            <div className="dropdown-situacao">
-              <div 
-                className={`dropdown-item ${filtroSituacao === 'todos' ? 'active' : ''}`}
-                onClick={() => selecionarFiltroSituacao('todos')}
-              >
-                Todos
-              </div>
-              <div 
-                className={`dropdown-item ${filtroSituacao === 'registrados' ? 'active' : ''}`}
-                onClick={() => selecionarFiltroSituacao('registrados')}
-              >
-                Registrados
-              </div>
-              <div 
-                className={`dropdown-item ${filtroSituacao === 'nao-registrados' ? 'active' : ''}`}
-                onClick={() => selecionarFiltroSituacao('nao-registrados')}
-              >
-                Não Registrados
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Filtro por Alfabeto com Dropdown */}
-        <div className="filtro-container">
-          <div 
-            className="filtro-alfabeto"
-            onClick={() => setMostrarDropdownAlfabeto(!mostrarDropdownAlfabeto)}
-          >
-            <div className="filtro-texto">
-              {filtroAlfabeto === 'todos' ? 'A-Z' : filtroAlfabeto}
-            </div>
-            <div className="filtro-seta">▼</div>
-          </div>
-
-          {/* Dropdown Alfabeto */}
-          {mostrarDropdownAlfabeto && (
-            <div className="dropdown-alfabeto">
-              {opcoesAlfabeto.map((letra) => (
-                <div 
-                  key={letra}
-                  className={`letra-item ${filtroAlfabeto === letra ? 'active' : ''}`}
-                  onClick={() => selecionarFiltroAlfabeto(letra)}
-                >
-                  {letra === 'todos' ? 'Todos' : letra}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Paginação */}
-        {/* Botão Anterior */}
-        <div 
-          className={`btn-paginacao anterior ${paginaAtual > 1 ? 'active' : 'disabled'}`}
-          onClick={paginaAnterior}
-        />
-        <div className={`texto-paginacao anterior ${paginaAtual > 1 ? 'active' : 'disabled'}`}>
-          Anterior
-        </div>
-
-        {/* Botão Próximo */}
-        <div 
-          className={`btn-paginacao proximo ${paginaAtual < totalPaginas ? 'active' : 'disabled'}`}
-          onClick={proximaPagina}
-        />
-        <div className={`texto-paginacao proximo ${paginaAtual < totalPaginas ? 'active' : 'disabled'}`}>
-          Próximo
-        </div>
-
-        {/* Números da paginação */}
-        {Array.from({ length: totalPaginas }, (_, index) => {
-          const numero = index + 1;
-          const leftPosition = 300 + (index * 32); // Posição dinâmica
-          
-          // Mostrar apenas algumas páginas ao redor da atual
-          if (
-            numero === 1 || 
-            numero === totalPaginas || 
-            (numero >= paginaAtual - 1 && numero <= paginaAtual + 1)
-          ) {
-            return (
-              <div key={numero}>
-                <div 
-                  className={`numero-pagina ${paginaAtual === numero ? 'active' : ''}`}
-                  style={{ left: `${leftPosition}px` }}
-                  onClick={() => irParaPagina(numero)}
-                />
-                <div 
-                  className={`texto-numero-pagina ${paginaAtual === numero ? 'active' : ''}`}
-                  style={{ left: `${leftPosition + 8}px` }}
-                >
-                  {numero}
-                </div>
-              </div>
-            );
-          }
-  
-          // Mostrar "..." para páginas não visíveis
-          if (numero === paginaAtual - 2 || numero === paginaAtual + 2) {
-            return (
-              <div key={numero}>
-                <div 
-                  className="texto-numero-pagina"
-                  style={{ left: `${leftPosition + 8}px` }}
-                >
-                  ...
-                </div>
-              </div>
-            );
-          }
-          
-          return null;
-        })}
-
-        {/* Título com contador */}
-        <div className="titulo-contador">
-          Contatos ({contatosFiltrados.length})
-        </div>
-
-         {/*BOTÃO ABRIR MODAL*/}
-        <div className="btn-adicionar" onClick={abrirModalAdicionar}>
-          <div className="btn-adicionar-icon">+</div>
-          <div className="btn-adicionar-texto">Adicionar Contato</div>
-        </div>
-
       </div>
 
-      {/* Modal para adicionar contato */}
+      {/* PAGINAÇÃO */}
+      {contatosPaginados.length > 0 && totalPaginas > 1 && (
+        <div className="pagination">
+          <button 
+            className={`pagination-btn prev ${paginaAtual === 1 ? 'disabled' : ''}`}
+            onClick={paginaAnterior}
+            disabled={paginaAtual === 1}
+          >
+            Anterior
+          </button>
+
+          <div className="pagination-numbers">
+            {Array.from({ length: totalPaginas }, (_, index) => {
+              const pagina = index + 1;
+              
+              // Mostrar primeira, última e páginas próximas
+              if (
+                pagina === 1 || 
+                pagina === totalPaginas || 
+                (pagina >= paginaAtual - 1 && pagina <= paginaAtual + 1)
+              ) {
+                return (
+                  <button
+                    key={pagina}
+                    className={`pagination-number ${pagina === paginaAtual ? 'active' : ''}`}
+                    onClick={() => irParaPagina(pagina)}
+                  >
+                    {pagina}
+                  </button>
+                );
+              }
+              
+              // Mostrar ellipsis
+              if (pagina === paginaAtual - 2 || pagina === paginaAtual + 2) {
+                return <span key={pagina} className="pagination-ellipsis">...</span>;
+              }
+              
+              return null;
+            })}
+          </div>
+
+          <button 
+            className={`pagination-btn next ${paginaAtual === totalPaginas ? 'disabled' : ''}`}
+            onClick={proximaPagina}
+            disabled={paginaAtual === totalPaginas}
+          >
+            Próximo
+          </button>
+        </div>
+      )}
+
+      {/* MODAIS */}
+      {/* Modal Adicionar Contato */}
       {mostrarModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Adicionar Novo Contato</h3>
-            
             <input
               type="text"
               placeholder="Nome *"
@@ -533,17 +540,14 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={100}
             />
-            
-            
             <input
               type="email"
-              placeholder="Email*"
+              placeholder="Email *"
               value={novoContato.email}
               onChange={(e) => setNovoContato({...novoContato, email: e.target.value})}
               className="modal-input"
               maxLength={100}
             />
-            
             <input
               type="text"
               placeholder="Telefone"
@@ -552,7 +556,6 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={20}
             />
-
             <input
               type="text"
               placeholder="Observações"
@@ -561,19 +564,11 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={100}
             />
-            
             <div className="modal-buttons">
-              <button 
-                onClick={salvarContato}
-                className="btn-modal btn-salvar"
-              >
+              <button onClick={salvarContato} className="btn btn-primary">
                 Salvar Contato
               </button>
-              
-              <button 
-                onClick={() => setMostrarModal(false)}
-                className="btn-modal btn-cancelar"
-              >
+              <button onClick={() => setMostrarModal(false)} className="btn btn-secondary">
                 Cancelar
               </button>
             </div>
@@ -581,22 +576,11 @@ const salvarEdicao = async () => {
         </div>
       )}
 
-      {/* Overlay para fechar dropdowns ao clicar fora */}
-      {(mostrarDropdownSituacao || mostrarDropdownAlfabeto) && (
-        <div 
-          className="dropdown-overlay"
-          onClick={() => {
-            setMostrarDropdownSituacao(false)
-            setMostrarDropdownAlfabeto(false)
-          }}
-        />
-      )}
-      {/* Modal para EDITAR contato */}
+      {/* Modal Editar Contato */}
       {mostrarModalEdicao && editarContato && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Editar Contato</h3>
-            
             <input
               type="text"
               placeholder="Nome *"
@@ -605,7 +589,6 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={100}
             />
-
             <input
               type="email"
               placeholder="Email *"
@@ -614,7 +597,6 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={100}
             />
-            
             <input
               type="text"
               placeholder="Telefone"
@@ -623,7 +605,6 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={20}
             />
-
             <input
               type="text"
               placeholder="Observações"
@@ -632,19 +613,16 @@ const salvarEdicao = async () => {
               className="modal-input"
               maxLength={100}
             />
-            
             <div className="modal-buttons">
-              <button 
-                onClick={salvarEdicao}
-                className="btn-modal btn-salvar"
-              >Salvar Alterações
+              <button onClick={salvarEdicao} className="btn btn-primary">
+                Salvar Alterações
               </button>
               <button 
                 onClick={() => {
                   setMostrarModalEdicao(false);
                   setEditarContato(null);
-                }}
-                className="btn-modal btn-cancelar"
+                }} 
+                className="btn btn-secondary"
               >
                 Cancelar
               </button>
@@ -652,8 +630,18 @@ const salvarEdicao = async () => {
           </div>
         </div>
       )}
-    </>
-      
+
+      {/* Overlay para dropdowns */}
+      {(mostrarDropdownSituacao || mostrarDropdownAlfabeto) && (
+        <div 
+          className="dropdown-overlay"
+          onClick={() => {
+            setMostrarDropdownSituacao(false);
+            setMostrarDropdownAlfabeto(false);
+          }}
+        />
+      )}
+    </div>
   );
 }
 

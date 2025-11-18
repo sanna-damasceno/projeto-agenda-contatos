@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaEnvelope, FaLock, FaSignInAlt, FaUserPlus, FaCheckSquare, FaSquare } from 'react-icons/fa';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -62,97 +63,109 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      {/* Lado Esquerdo - Background */}
-      <div className="background-section">
-        <div className="welcome-text">BEM-VINDO!</div>
-        <div className="placeholder-rectangle"></div>
-        <img 
-          className="background-image" 
-          src="/images/imagem_login.png" 
-          alt="Background" 
-        />
-      </div>
+    <div className="auth-container">
+      {/* Logo */}
+      <img 
+        className="auth-logo" 
+        src="/images/logo_contate_se.png" 
+        alt="Contate-se Logo" 
+      />
 
-      {/* Lado Direito - Formulário */}
-      <div className="form-section">
-        <div className="form-card">
-          <div className="form-title">LOGIN</div>
-          <div className="form-subtitle">Organize seus contatos</div>
+      <div className="auth-content">
+        {/* Background Section - Visível apenas em desktop */}
+        <div className="auth-background">
+          <div className="auth-welcome-text">BEM-VINDO!</div>
+          <img 
+            className="auth-image" 
+            src="/images/imagem_login.png" 
+            alt="Background" 
+          />
+        </div>
 
-          {/* MENSAGEM DE ERRO */}
-          {error && (
-            <div className="error-message">
-              <i className="fas fa-exclamation-circle"></i>
-              {error}
-            </div>
-          )}
+        {/* Form Section */}
+        <div className="auth-form-section">
+          <div className="auth-form-card">
+            <div className="auth-form-title">LOGIN</div>
+            <div className="auth-form-subtitle">Organize seus contatos</div>
 
-          <form onSubmit={handleSubmit}>
-            {/* Campo Email */}
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-envelope input-icon"></i>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Digite seu e-mail"
-                  className="form-input"
-                  disabled={loading}
-                />
+            {/* MENSAGEM DE ERRO */}
+            {error && (
+              <div className="error-message">
+                <i className="fas fa-exclamation-circle"></i>
+                {error}
               </div>
-            </div>
+            )}
 
-            {/* Campo Senha */}
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-lock input-icon"></i>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Digite sua senha"
-                  className="form-input"
-                  disabled={loading}
-                />
+            <form onSubmit={handleSubmit}>
+              {/* Campo Email */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaEnvelope className="auth-input-icon" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Digite seu e-mail"
+                    className="auth-form-input"
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Opções do Formulário */}
-            <div className="form-options">
-              <div 
-                className="checkbox-option"
-                onClick={toggleCheckbox}
+              {/* Campo Senha */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaLock className="auth-input-icon" />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Digite sua senha"
+                    className="auth-form-input"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {/* Opções do Formulário */}
+              <div className="auth-form-options">
+                <div 
+                  className="auth-checkbox-option"
+                  onClick={toggleCheckbox}
+                >
+                  {keepConnected ? (
+                    <FaCheckSquare className="checkbox-icon" />
+                  ) : (
+                    <FaSquare className="checkbox-icon" />
+                  )}
+                  <span>Manter conectado</span>
+                </div>
+                <Link to="/esqueci-senha" className="auth-forgot-password">
+                  Esqueci minha senha
+                </Link>
+              </div>
+
+              {/* Botão Entrar */}
+              <button 
+                type="submit" 
+                className="auth-submit-btn"
+                disabled={loading}
               >
-                <i className={`fas ${keepConnected ? 'fa-check-square' : 'fa-square'}`}></i>
-                <span>Manter conectado</span>
+                <FaSignInAlt className="btn-icon" />
+                {loading ? 'ENTRANDO...' : 'ENTRAR'}
+              </button>
+
+              {/* Link Cadastre-se */}
+              <div className="auth-link">
+                <Link to="/cadastro">
+                  <FaUserPlus className="btn-icon" />
+                  CADASTRE-SE
+                </Link>
               </div>
-              <Link to="/esqueci-senha" className="forgot-password">
-                Esqueci minha senha
-              </Link>
-            </div>
-
-            {/* Botão Entrar */}
-            <button 
-              type="submit" 
-              className="submit-btn"
-              disabled={loading}
-            >
-              <i className="fas fa-sign-in-alt"></i>
-              {loading ? 'ENTRANDO...' : 'ENTRAR'}
-            </button>
-
-            {/* Link Cadastre-se */}
-            <div className="register-link">
-              <Link to="/cadastro">
-                <i className="fas fa-user-plus"></i>
-                CADASTRE-SE
-              </Link>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>

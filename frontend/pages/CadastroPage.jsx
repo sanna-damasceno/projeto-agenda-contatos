@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx'; 
+import { FaUser, FaEnvelope, FaPhone, FaLock, FaUserPlus, FaArrowLeft } from 'react-icons/fa';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -74,127 +75,145 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="register-container">
-      <div className="background-section">
-        <div className="welcome-text-cadastro">BEM-VINDO!</div>
-        <img 
-          className="background-image" 
-          src="/images/imagem_login.png" 
-          alt="Background" 
-        />
-      </div>
+    <div className="auth-container">
+      {/* Logo */}
+      <img 
+        className="auth-logo" 
+        src="/images/logo_contate_se.png" 
+        alt="Contate-se Logo" 
+      />
 
-      <div className="form-section">
-        <div className="form-card">
-          <div className="form-title">CADASTRO</div>
-          <div className="form-subtitle">Organize seus contatos</div>
+      <div className="auth-content">
+        {/* Background Section - Visível apenas em desktop */}
+        <div className="auth-background">
+          <div className="auth-welcome-text">BEM-VINDO!</div>
+          <img 
+            className="auth-image" 
+            src="/images/imagem_login.png" 
+            alt="Background" 
+          />
+        </div>
 
-          {/* MENSAGEM DE ERRO */}
-          {error && (
-            <div className="error-message">
-              <i className="fas fa-exclamation-circle"></i>
-              {error}
-            </div>
-          )}
+        {/* Form Section */}
+        <div className="auth-form-section">
+          <div className="auth-form-card">
+            <div className="auth-form-title">CADASTRO</div>
+            <div className="auth-form-subtitle">Crie sua conta para organizar seus contatos</div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-user input-icon"></i>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Digite seu nome"
-                  className="form-input"
-                  required
-                  disabled={loading}
-                />
+            {/* MENSAGEM DE ERRO */}
+            {error && (
+              <div className="error-message">
+                <i className="fas fa-exclamation-circle"></i>
+                {error}
               </div>
-            </div>
+            )}
 
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-envelope input-icon"></i>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Digite seu e-mail"
-                  className="form-input"
-                  required
-                  disabled={loading}
-                />
+            <form onSubmit={handleSubmit}>
+              {/* Campo Nome */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaUser className="auth-input-icon" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Digite seu nome completo"
+                    className="auth-form-input"
+                    required
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-phone input-icon"></i>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Digite seu telefone"
-                  className="form-input"
-                  disabled={loading}
-                />
+              {/* Campo Email */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaEnvelope className="auth-input-icon" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Digite seu e-mail"
+                    className="auth-form-input"
+                    required
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-lock input-icon"></i>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Digite sua senha"
-                  className="form-input"
-                  required
-                  disabled={loading}
-                  minLength="6"
-                />
+              {/* Campo Telefone (Opcional) */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaPhone className="auth-input-icon" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Digite seu telefone (opcional)"
+                    className="auth-form-input"
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="input-group">
-              <div className="input-container">
-                <i className="fas fa-lock input-icon"></i>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Digite sua senha novamente"
-                  className="form-input"
-                  required
-                  disabled={loading}
-                  minLength="6"
-                />
+              {/* Campo Senha */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaLock className="auth-input-icon" />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Digite sua senha (mín. 6 caracteres)"
+                    className="auth-form-input"
+                    required
+                    disabled={loading}
+                    minLength="6"
+                  />
+                </div>
               </div>
-            </div>
 
-            <button 
-              type="submit" 
-              className="submit-btn"
-              disabled={loading}
-            >
-              <i className="fas fa-user-plus"></i>
-              {loading ? 'CADASTRANDO...' : 'CADASTRAR'}
-            </button>
+              {/* Campo Confirmar Senha */}
+              <div className="auth-input-group">
+                <div className="auth-input-container">
+                  <FaLock className="auth-input-icon" />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirme sua senha"
+                    className="auth-form-input"
+                    required
+                    disabled={loading}
+                    minLength="6"
+                  />
+                </div>
+              </div>
 
-            <div className="register-link">
-              <Link to="/login">
-                <i className="fas fa-arrow-left"></i>
-                VOLTAR PARA LOGIN
-              </Link>
-            </div>
-          </form>
+              {/* Botão Cadastrar */}
+              <button 
+                type="submit" 
+                className="auth-submit-btn"
+                disabled={loading}
+              >
+                <FaUserPlus className="btn-icon" />
+                {loading ? 'CADASTRANDO...' : 'CADASTRAR'}
+              </button>
+
+              {/* Link Voltar para Login */}
+              <div className="auth-link">
+                <Link to="/login">
+                  <FaArrowLeft className="btn-icon" />
+                  VOLTAR PARA LOGIN
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+const { User } = require('../models');
 
 const updateProfile = async (req, res) => {
   try {
@@ -11,30 +12,27 @@ const updateProfile = async (req, res) => {
       return res.status(400).json({ error: 'Nome é obrigatório' });
     }
 
-    // Verificar se usuário existe
-    const [users] = await pool.execute(
-      'SELECT id FROM usuarios WHERE id = ?',
-      [userId]
-    );
-
-    if (users.length === 0) {
+    // Verificar se usuário existe usando o Model
+    const userExists = await User.findById(userId);
+    if (!userExists) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    // Atualizar no banco
-    await pool.execute(
-      'UPDATE usuarios SET nome = ?, telefone = ?, avatar_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [name.trim(), phone, avatar_url, userId]
-    );
+    // Atualizar usuário usando o Model
+    const updateData = { 
+      name: name.trim(), 
+      phone, 
+      avatar_url 
+    };
+    
+    const updated = await User.update(userId, updateData);
+    
+    if (!updated) {
+      return res.status(500).json({ error: 'Erro ao atualizar perfil' });
+    }
 
-    // Buscar usuário atualizado
-    const [updatedUsers] = await pool.execute(
-      `SELECT id, nome as name, email, telefone as phone, avatar_url, data_criacao as created_at, updated_at 
-       FROM usuarios WHERE id = ?`,
-      [userId]
-    );
-
-    const updatedUser = updatedUsers[0];
+    // Buscar usuário atualizado usando o Model
+    const updatedUser = await User.findById(userId);
 
     res.json({
       success: true,
@@ -63,17 +61,12 @@ const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
 
-    const [users] = await pool.execute(
-      `SELECT id, nome as name, email, telefone as phone, avatar_url, data_criacao as created_at, updated_at 
-       FROM usuarios WHERE id = ?`,
-      [userId]
-    );
+    // Buscar usuário usando o Model
+    const user = await User.findById(userId);
 
-    if (users.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
-
-    const user = users[0];
 
     res.json({
       success: true,
@@ -95,4 +88,9 @@ const getUserProfile = async (req, res) => {
       details: error.message 
     });
   }
+};
+
+module.exports = {
+  updateProfile,
+  getUserProfile
 };

@@ -1,11 +1,11 @@
-const pool = require('../config/database');
+const { Contact, User } = require('../models');
 
 const getContacts = async (req, res) => {
   try {
-    const [contacts] = await pool.execute(
-      'SELECT * FROM contatos WHERE usuario_id = ? ORDER BY nome',
-      [req.user.userId]
-    );
+    const userId = req.user.userId;
+
+    // Buscar contatos usando o Model
+    const contacts = await Contact.findByUserId(userId);
 
     // Converter para formato do frontend
     const formattedContacts = contacts.map(contact => ({
@@ -28,17 +28,15 @@ const getContacts = async (req, res) => {
 const getContactById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    const [contacts] = await pool.execute(
-      'SELECT * FROM contatos WHERE id = ? AND usuario_id = ?',
-      [id, req.user.userId]
-    );
+    // Buscar contato específico usando o Model
+    const contact = await Contact.findById(id, userId);
 
-    if (contacts.length === 0) {
+    if (!contact) {
       return res.status(404).json({ error: 'Contato não encontrado' });
     }
 
-    const contact = contacts[0];
     res.json({
       id: contact.id,
       name: contact.nome,
@@ -59,35 +57,36 @@ const createContact = async (req, res) => {
     const { name, phone, email, notes } = req.body;
     const userId = req.user.userId;
 
-     if (!name || name.trim() === '') {
+    // Validar campos obrigatórios
+    if (!name || name.trim() === '') {
       return res.status(400).json({ error: 'Nome é obrigatório' });
     }
     if (!email || email.trim() === '') {
       return res.status(400).json({ error: 'Email é obrigatório' });
     }
 
-    // Verificar se o contato é um usuário registrado
-    const [existingUsers] = await pool.execute(
-      'SELECT id FROM usuarios WHERE email = ?',
-      [email]
-    );
+    // Verificar se o contato é um usuário registrado usando o Model
+    const userExists = await User.findByEmail(email);
+    const status = userExists ? 'Registrado' : 'Não Registrado';
 
-    // Definir situação automaticamente
-    const status = existingUsers.length > 0 ? 'Registrado' : 'Não Registrado';
-
-    const telefoneValue = phone && phone.trim() !== '' ? phone.trim() : null;
-
-    // Inserir contato
-    const [result] = await pool.execute(
-      'INSERT INTO contatos (usuario_id, nome, telefone, email, observacoes, situacao) VALUES (?, ?, ?, ?, ?, ?)',
-      [userId, name, phone, email, notes, status]
-    );
+    // Criar contato usando o Model
+    const contactId = await Contact.create({
+      usuario_id: userId,
+      nome: name.trim(),
+      telefone: phone ? phone.trim() : null,
+      email: email.trim(),
+      observacoes: notes ? notes.trim() : null,
+      situacao: status
+    });
 
     res.status(201).json({
       message: 'Contato criado com sucesso',
       contact: { 
-        id: result.insertId, 
-        name, phone, email, notes, 
+        id: contactId, 
+        name, 
+        phone, 
+        email, 
+        notes, 
         status 
       }
     });
@@ -97,11 +96,11 @@ const createContact = async (req, res) => {
   }
 };
 
-
 const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, phone, email, notes, status } = req.body;
+    const userId = req.user.userId;
 
     console.log('Dados recebidos para atualização:', { id, name, phone, email, notes, status });
 
@@ -113,55 +112,32 @@ const updateContact = async (req, res) => {
       return res.status(400).json({ error: 'Email é obrigatório' });
     }
 
-    // Verificar se o contato existe
-    const [contacts] = await pool.execute(
-      'SELECT * FROM contatos WHERE id = ?',
-      [id]
-    );
-
-    if (contacts.length === 0) {
+    // Verificar se o contato existe e pertence ao usuário
+    const existingContact = await Contact.findById(id, userId);
+    if (!existingContact) {
       return res.status(404).json({ error: 'Contato não encontrado' });
     }
 
-    const telefoneValue = phone && phone.trim() !== '' ? phone.trim() : null;
-
-    // Preparar valores para o banco (evitar undefined)
+    // Preparar dados para atualização
     const updateData = {
       nome: name.trim(),
-      telefone: phone.trim(),
-      email: email ? email.trim() : null,
+      telefone: phone ? phone.trim() : null,
+      email: email.trim(),
       observacoes: notes ? notes.trim() : null,
       situacao: status || 'Não Registrado'
     };
 
     console.log('Dados sanitizados:', updateData);
 
-    // Atualizar contato
-    const [result] = await pool.execute(
-      `UPDATE contatos 
-       SET nome = ?, telefone = ?, email = ?, observacoes = ?, situacao = ?
-       WHERE id = ?`,
-      [
-        updateData.nome,
-        updateData.telefone,
-        updateData.email,
-        updateData.observacoes,
-        updateData.situacao,
-        id
-      ]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Contato não encontrado' });
+    // Atualizar contato usando o Model
+    const updated = await Contact.update(id, updateData);
+    
+    if (!updated) {
+      return res.status(500).json({ error: 'Erro ao atualizar contato' });
     }
 
     // Buscar contato atualizado
-    const [updatedContacts] = await pool.execute(
-      'SELECT * FROM contatos WHERE id = ?',
-      [id]
-    );
-
-    const updatedContact = updatedContacts[0];
+    const updatedContact = await Contact.findById(id);
 
     res.json({
       message: 'Contato atualizado com sucesso',
@@ -187,18 +163,20 @@ const updateContact = async (req, res) => {
 const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.userId;
 
-    // Verificar se o contato pertence ao usuário
-    const [userContacts] = await pool.execute(
-      'SELECT id FROM contatos WHERE id = ? AND usuario_id = ?',
-      [id, req.user.userId]
-    );
-
-    if (userContacts.length === 0) {
+    // Verificar se o contato existe e pertence ao usuário
+    const contactExists = await Contact.findById(id, userId);
+    if (!contactExists) {
       return res.status(404).json({ error: 'Contato não encontrado' });
     }
 
-    await pool.execute('DELETE FROM contatos WHERE id = ?', [id]);
+    // Excluir contato usando o Model
+    const deleted = await Contact.delete(id, userId);
+    
+    if (!deleted) {
+      return res.status(500).json({ error: 'Erro ao excluir contato' });
+    }
 
     res.json({ message: 'Contato excluído com sucesso' });
   } catch (error) {
@@ -212,5 +190,5 @@ module.exports = {
   getContactById,
   createContact, 
   updateContact, 
-  deleteContact 
+  deleteContact
 };

@@ -1,39 +1,26 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+const { User, Contact } = require('../models');
 
 const register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
 
-    // Verificar se usuário já existe
-    const [existingUsers] = await pool.execute(
-      'SELECT id FROM usuarios WHERE email = ?',
-      [email]
-    );
-
-    if (existingUsers.length > 0) {
+    // Verificar se usuário já existe usando o Model
+    const emailExists = await User.emailExists(email);
+    if (emailExists) {
       return res.status(400).json({ error: 'Email já cadastrado' });
     }
 
-    // Hash da senha
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Inserir usuário
-    const [result] = await pool.execute(
-      'INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)',
-      [name, email, phone, hashedPassword]
-    );
+    // Criar usuário usando o Model
+    const userId = await User.create({ name, email, phone, password });
 
     // Atualizar situação dos contatos existentes
-    await pool.execute(
-      'UPDATE contatos SET situacao = "Registrado" WHERE email = ?',
-      [email]
-    );
+    await User.markContactsAsUnregistered(email, userId);
 
     // Gerar token
     const token = jwt.sign(
-      { userId: result.insertId, email },
+      { userId, email },
       process.env.JWT_SECRET || 'seu_segredo',
       { expiresIn: '24h' }
     );
@@ -41,7 +28,7 @@ const register = async (req, res) => {
     res.status(201).json({
       message: 'Usuário criado com sucesso',
       token,
-      user: { id: result.insertId, name, email, phone }
+      user: { id: userId, name, email, phone }
     });
   } catch (error) {
     console.error('Erro no registro:', error);
@@ -53,17 +40,11 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar usuário
-    const [users] = await pool.execute(
-      'SELECT * FROM usuarios WHERE email = ?',
-      [email]
-    );
-
-    if (users.length === 0) {
+    // Buscar usuário usando o Model
+    const user = await User.findByEmail(email);
+    if (!user) {
       return res.status(400).json({ error: 'Credenciais inválidas' });
     }
-
-    const user = users[0];
 
     // Verificar senha
     const validPassword = await bcrypt.compare(password, user.senha);
@@ -94,79 +75,66 @@ const login = async (req, res) => {
   }
 };
 
-  // Verificar se vai ser preciso...
-  const getUserProfile = async (req, res) => {
-    try {
-      const userId = req.user.userId;
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.userId;
 
-      console.log('Buscando perfil do usuário ID:', userId);
+    console.log('Buscando perfil do usuário ID:', userId);
 
-      const [users] = await pool.execute(
-        `SELECT id, nome as name, email, telefone as phone, avatar_url, data_criacao as created_at 
-        FROM usuarios WHERE id = ?`,
-        [userId]
-      );
-      if (users.length === 0) {
+    // Buscar usuário usando o Model
+    const user = await User.findById(userId);
+    if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
-      }
-
-      const user = users[0];
-
-      res.json({
-        success: true,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          avatar_url: user.avatar_url,
-          created_at: user.created_at
-        }
-      });
-      } catch (error) {
-      console.error('Erro ao buscar perfil:', error);
-      res.status(500).json({ 
-        error: 'Erro interno do servidor',
-        details: error.message 
-      });
     }
-  };
 
-  const updateProfile = async (req, res) => {
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        avatar_url: user.avatar_url,
+        created_at: user.created_at
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    res.status(500).json({ 
+      error: 'Erro interno do servidor',
+      details: error.message 
+    });
+  }
+};
+
+const updateProfile = async (req, res) => {
   try {
     const { name, phone, avatar_url } = req.body;
     const userId = req.user.userId;
 
     console.log('Atualizando perfil do usuário ID:', userId, 'Dados:', { name, phone, avatar_url });
+    
     // Validar dados
     if (!name || name.trim() === '') {
       return res.status(400).json({ error: 'Nome é obrigatório' });
     }
 
-    // Verificar se usuário existe
-    const [users] = await pool.execute(
-      'SELECT id FROM usuarios WHERE id = ?',
-      [userId]
-    );
-
-     if (users.length === 0) {
+    // Verificar se usuário existe usando o Model
+    const userExists = await User.findById(userId);
+    if (!userExists) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    // Atualizar no banco
-    await pool.execute(
-      'UPDATE usuarios SET nome = ?, telefone = ?, avatar_url = ? WHERE id = ?',
-      [name.trim(), phone, avatar_url, userId]
-    );
+    // Atualizar usuário usando o Model
+    const updateData = { name: name.trim(), phone, avatar_url };
+    const updated = await User.update(userId, updateData);
+    
+    if (!updated) {
+      return res.status(500).json({ error: 'Erro ao atualizar perfil' });
+    }
 
     // Buscar usuário atualizado
-    const [updatedUsers] = await pool.execute(
-      `SELECT id, nome as name, email, telefone as phone, avatar_url, data_criacao as created_at 
-       FROM usuarios WHERE id = ?`,
-      [userId]
-    );
-
-    const updatedUser = updatedUsers[0];
+    const updatedUser = await User.findById(userId);
 
     res.json({
       success: true,
@@ -197,43 +165,33 @@ const deleteAccount = async (req, res) => {
 
     console.log('Excluindo conta do usuário ID:', userId);
 
-    // Verificar se usuário existe e pegar o email
-    const [users] = await pool.execute(
-      'SELECT id, email FROM usuarios WHERE id = ?',
-      [userId]
-    );
-
-    if (users.length === 0) {
+    // Verificar se usuário existe e pegar o email usando o Model
+    const user = await User.findById(userId);
+    if (!user) {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    const userEmail = users[0].email;
+    const userEmail = user.email;
 
     // Iniciar transação para garantir consistência
+    const pool = require('../config/database');
     const connection = await pool.getConnection();
     await connection.beginTransaction();
 
     try {
       // 1. PRIMEIRO: Atualizar a situação dos contatos em OUTRAS agendas
-      // Para todos os contatos de outros usuários que tinham este email, mudar para "Não Registrado"
-      await connection.execute(
-        'UPDATE contatos SET situacao = "Não Registrado" WHERE email = ? AND usuario_id != ?',
-        [userEmail, userId]
-      );
-
-      console.log(`Contatos com email ${userEmail} atualizados para "Não Registrado" em outras agendas`);
+      const updatedContacts = await User.markContactsAsUnregistered(userEmail, userId);
+      console.log(`Contatos com email ${userEmail} atualizados para "Não Registrado" em outras agendas: ${updatedContacts}`);
 
       // 2. SEGUNDO: Excluir todos os contatos do próprio usuário
-      await connection.execute(
-        'DELETE FROM contatos WHERE usuario_id = ?',
-        [userId]
-      );
+      const deletedContacts = await Contact.deleteAllByUserId(userId);
+      console.log(`Contatos do usuário excluídos: ${deletedContacts}`);
 
       // 3. TERCEIRO: Excluir o usuário
-      await connection.execute(
-        'DELETE FROM usuarios WHERE id = ?',
-        [userId]
-      );
+      const userDeleted = await User.delete(userId);
+      if (!userDeleted) {
+        throw new Error('Erro ao excluir usuário');
+      }
 
       await connection.commit();
       
@@ -266,22 +224,17 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Verificar se o usuário existe
-    const [users] = await pool.execute(
-      'SELECT id, nome FROM usuarios WHERE email = ?',
-      [email]
-    );
+    // Verificar se o usuário existe usando o Model
+    const user = await User.findByEmail(email);
 
     // SEMPRE retornar sucesso (por segurança não revelar se email existe)
-    if (users.length === 0) {
+    if (!user) {
       // Mas internamente não faz nada
       console.log(`Tentativa de recuperação para email não cadastrado: ${email}`);
       return res.json({ 
         message: 'Se o email estiver cadastrado, você receberá instruções de recuperação' 
       });
     }
-
-    const user = users[0];
     
     // Gerar token de recuperação (válido por 1 hora)
     const resetToken = jwt.sign(
@@ -321,14 +274,12 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ error: 'Token inválido' });
     }
 
-    // Hash da nova senha
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Atualizar senha no banco
-    await pool.execute(
-      'UPDATE usuarios SET senha = ? WHERE id = ?',
-      [hashedPassword, decoded.userId]
-    );
+    // Atualizar senha usando o Model
+    const passwordUpdated = await User.updatePassword(decoded.userId, newPassword);
+    
+    if (!passwordUpdated) {
+      return res.status(500).json({ error: 'Erro ao redefinir senha' });
+    }
 
     console.log(`Senha redefinida para usuário ID: ${decoded.userId}`);
 
@@ -348,7 +299,6 @@ const resetPassword = async (req, res) => {
   }
 };
 
-
 module.exports = { 
   register, 
   login,
@@ -358,4 +308,3 @@ module.exports = {
   forgotPassword,  
   resetPassword     
 };
-

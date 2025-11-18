@@ -375,6 +375,26 @@ body {
 }
 
 
+.titulo-principal {
+  font-size: 32px;
+  font-weight: bold;
+  color: #4e47e0;
+  margin: 0 60px;
+  padding: 10px;
+  text-align: left; /* Alinha à esquerda */
+  width: auto; /* Largura automática */
+  /* REMOVA: left: 500px !important; */
+}
+
+.header-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  padding: 0 20px;
+}
+
+
 /* Dashboard Container */
 
 
@@ -585,9 +605,9 @@ body {
 
 /* Botão Adicionar */
 .btn-adicionar {
-  width: 232px;
+  width: 200px;
   height: 37px;
-  left: 151px;
+  left: 70px;
   top: 95px;
   position: absolute;
   background: #6C63FF;
@@ -620,9 +640,9 @@ body {
 /* Botão do Perfil no Dashboard */
 .perfil-btn {
   position: absolute;
-  top: 80px;
-  right: 100px; 
-  background: #17a2b8;
+  top: 23px;
+  right: 180px; 
+  background: #6C63FF;
   color: white;
   padding: 10px 15px;
   border-radius: 8px;
@@ -644,15 +664,15 @@ body {
   position: absolute;
   top: 20px !important;
   right: 98px !important;
-  background: #dc3545;
-  color: white;
+  background: white !important;
+  color: black !important;
   padding: 10px 15px;
-  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   z-index: -1000;
   transition: background 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  size: 5000px !important;
+  
 }
 
 .logout-btn:hover {
@@ -894,12 +914,12 @@ body {
 }
 
 /* Título */
-.titulo-dashboard {
-  left: 151px;
-  top: 20px;
+.titulo-contador {
+  left: 75px;
+  top: 155px;
   position: absolute;
   color: black;
-  font-size: 32px;
+  font-size: 23px;
   font-weight: 600;
   word-wrap: break-word;
 }

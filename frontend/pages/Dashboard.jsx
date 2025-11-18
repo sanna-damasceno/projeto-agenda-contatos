@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { contactService } from '../services/api';
+import { FaSignOutAlt } from 'react-icons/fa';
 import '../App.css';
 
 function Dashboard() {
@@ -229,6 +230,10 @@ const salvarEdicao = async () => {
 
   return (
     <>
+      {/* TÍTULO PRINCIPAL*/}
+      <div className="titulo-principal">
+        Contate-se
+      </div>
 
       {/* Botão do Perfil */}
       <div className="perfil-btn" onClick={() => navigate('/perfil')}>
@@ -237,12 +242,7 @@ const salvarEdicao = async () => {
 
       {/* Botão de Logout com nome do usuário */}
       <div className="logout-btn" onClick={handleLogout}>
-        Sair ({user?.name})
-      </div>
-      
-      {/* Botão de Logout com nome do usuário */}
-      <div className="logout-btn" onClick={handleLogout}>
-        Sair ({user?.name})
+        <FaSignOutAlt size={24} />
       </div>
 
       {/* MENSAGEM DE ERRO */}
@@ -507,7 +507,7 @@ const salvarEdicao = async () => {
         })}
 
         {/* Título com contador */}
-        <div className="titulo-dashboard">
+        <div className="titulo-contador">
           Contatos ({contatosFiltrados.length})
         </div>
 

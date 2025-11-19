@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from 'react';
 import "../App.css";
-
 
 const ToastNotification = () => {
   const [toasts, setToasts] = useState([]);
@@ -15,9 +13,13 @@ const ToastNotification = () => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
-  // Exportar a função para uso global
+  // Exportar as funções para uso global
   useEffect(() => {
     window.showToast = addToast;
+    window.showSuccess = (message) => addToast(message, 'success');
+    window.showError = (message) => addToast(message, 'error');
+    window.showWarning = (message) => addToast(message, 'warning');
+    window.showInfo = (message) => addToast(message, 'info');
   }, []);
 
   return (
@@ -43,8 +45,15 @@ const Toast = ({ message, type, duration, onClose }) => {
     <div className={`toast toast-${type}`}>
       <div className="toast-content">
         <span className="toast-message">{message}</span>
-        <button className="toast-close" onClick={onClose}>×</button>
+        <button className="toast-close" onClick={onClose} aria-label="Fechar">
+          ×
+        </button>
       </div>
+      {/* Barra de progresso: */}
+      <div 
+        className="toast-progress" 
+        style={{ animationDuration: `${duration}ms` }}
+      />
     </div>
   );
 };

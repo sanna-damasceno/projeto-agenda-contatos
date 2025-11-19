@@ -80,15 +80,14 @@ function Dashboard() {
           notes: novoContato.observacoes || ''
         });
         
-        setContatos([...contatos, result.contact]);
         setMostrarModal(false);
         loadContacts();
-        alert('Contato adicionado com sucesso!');
+        window.showSuccess('Contato adicionado com sucesso!');
       } catch (error) {
-        alert('Erro ao adicionar contato: ' + error.message);
+        window.showError('Erro ao adicionar contato: ' + error.message);
       }
     } else {
-      alert('Preencha pelo menos nome e e-mail!');
+      window.showWarning('Preencha pelo menos nome e e-mail!');
     }
   }
 
@@ -98,10 +97,12 @@ function Dashboard() {
       try {
         await contactService.deleteContact(id);
         setContatos(contatos.filter(contato => contato.id !== id));
-        alert('Contato removido com sucesso!');
+        window.showSuccess('Contato removido com sucesso!');
       } catch (error) {
-        alert('Erro ao remover contato: ' + error.message);
+        window.showError('Erro ao remover contato: ' + error.message);
       }
+    } else {
+      window.showInfo('Remoção cancelada');
     }
   }
 
@@ -132,12 +133,13 @@ function Dashboard() {
         setMostrarModalEdicao(false);
         setEditarContato(null);
         loadContacts();
-        alert('Contato atualizado com sucesso!');
+        window.showSuccess('Contato atualizado com sucesso!');
+
       } catch (error) {
-        alert('Erro ao atualizar contato: ' + error.message);
+        window.showError('Erro ao atualizar contato: ' + error.message);
       }
     } else {
-      alert('Preencha pelo menos nome e e-mail!'); 
+      window.showWarning('Preencha pelo menos nome e e-mail!'); 
     }
   };
 

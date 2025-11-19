@@ -43,17 +43,6 @@ const authRequest = async (endpoint, options = {}) => {
 
     const data = await response.json();
     
-    // Mostrar mensagem de sucesso para operações que não sejam GET
-    if (options.method && options.method !== 'GET' && window.showToast) {
-      const actionMessages = {
-        'POST': 'criado',
-        'PUT': 'atualizado', 
-        'DELETE': 'excluído'
-      };
-      const message = `${getResourceName(endpoint)} ${actionMessages[options.method]} com sucesso!`;
-      window.showToast(message, 'success');
-    }
-    
     return data;
 
   } catch (error) {
